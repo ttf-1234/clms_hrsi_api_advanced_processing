@@ -8,18 +8,13 @@ This repository provides an automated pipeline for downloading, processing, and 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/yourrepo.git
-   cd yourrepo
+   git clone https://github.com/ttf-1234/clms_hrsi_api_advanced_processing
+   cd clms_hrsi_api_advanced_processing
    ```
 
 2. **Install dependencies and set up the environment:**
    ```bash
    bash setup.sh
-   ```
-
-   *(Alternatively, if you prefer pip:)*  
-   ```bash
-   pip install -r requirements.txt
    ```
 
 ## Required Input Data
