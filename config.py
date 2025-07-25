@@ -4,8 +4,8 @@ reference_raster_crs = "EPSG:32632"
 tile_txt_path = "./../data/tile_system/relevant_tiles.txt"
 
 ##### CLMS credentials #####
-clms_username = "xxxx"
-clms_password = "xxxxx"
+clms_username = "DeineMutter"
+clms_password = "#RealWorkBitch24"
 
 ##### CLMS product ID #####
 clms_query_type = "query_and_download"  # Options: "query", "download", "query_and_download"
