@@ -1,2 +1,4 @@
 # Ignore configuration files containing sensitive data
 config.py
+__pycache__
+CLMS_downloader.py
