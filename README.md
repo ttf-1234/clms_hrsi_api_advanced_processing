@@ -19,8 +19,8 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
 
    **With Conda:**
    ```bash
-   conda create -n clms_api_advanced python=3.10 -y
-   conda activate clms_api_advanced
+   conda create -n clms_hrsi_api_advanced_processing python=3.10 -y
+   conda activate clms_hrsi_api_advanced_processing
    conda install -y geopandas rasterio shapely requests fiona gdal pyogrio
    ```
 
