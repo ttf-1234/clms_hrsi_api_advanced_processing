@@ -4,6 +4,9 @@
 
 This repository provides an automated pipeline for downloading, processing, and filtering Copernicus Land Monitoring Service (CLMS) High Resolution Snow & Ice (HRSI) products. The workflow includes tile selection, data download, unzipping, mosaicking, reclassification, resampling, and cloud coverage filtering, all configurable via a central `config.py` file.
 
+The pipeline is designed for reproducible, large-scale processing of Sentinel-2 based snow products for a user-defined area of interest (AOI).  
+For more information about the CLMS snow products, visit the [Copernicus Land Monitoring Service Snow Products page](https://land.copernicus.eu/en/products/snow).
+
 ## Installation
 
 1. **Clone the repository:**
@@ -28,13 +31,10 @@ This repository provides an automated pipeline for downloading, processing, and 
    pip install geopandas rasterio shapely requests fiona gdal pyogrio
    ```
 
-3. **Sign up for CLMS credentials:**  
-   
-
 ## Required Input Data
 
 - **Reference Raster:**  
-  You must provide a reference raster file (e.g., a DEM or raster) that defines your AOI. The path and CRS for this raster are set in `config.py`:
+  You must provide a reference raster file (e.g., a DEM or any raster) that defines your AOI. The path and CRS for this raster are set in `config.py`:
   ```python
   reference_raster_path = "./../data/reference_raster/dem_rofental_100.asc"
   reference_raster_crs = "EPSG:32632"
@@ -51,6 +51,38 @@ This repository provides an automated pipeline for downloading, processing, and 
 ## Getting Started
 
 1. **Configure your processing parameters and credentials in `config.py`.**
+
+   In `config.py`, you can set the following options to control the pipeline:
+
+   - **Reference Raster:**
+     - `reference_raster_path`: Path to your reference raster file (defines AOI).
+     - `reference_raster_crs`: CRS of your reference raster.
+     - `tile_txt_path`: Path where the list of relevant Sentinel-2 tiles will be saved.
+
+   - **CLMS Credentials:**
+     - `clms_username`: Your CLMS username.
+     - `clms_password`: Your CLMS password.
+
+   - **CLMS Product and Download Options:**
+     - `clms_query_type`: `"query"`, `"download"`, or `"query_and_download"` (controls what the downloader does).
+     - `clms_product`: List of product types to download (e.g., `["FSC", "PSA"]`).
+
+   - **Time Period:**
+     - `start_date`: Start date for data download (format: `YYYY-MM-DDTHH:MM:SSZ`).
+     - `end_date`: End date for data download (format: `YYYY-MM-DDTHH:MM:SSZ`).
+
+   - **Output Paths:**
+     - `output_path_original`: Directory for original downloaded data.
+     - `output_path_processed`: Directory for processed data.
+
+   - **Processing Options:**
+     - `mosaic_output`: `True` to create mosaics, `False` to skip.
+     - `reclassify`: `True` to reclassify rasters, `False` to skip.
+     - `crop_resample`: `True` to resample/crop rasters to the reference grid, `False` to skip.
+     - `filter_cc`: `True` to filter images by cloud coverage, `False` to skip.
+     - `cc_threshold`: Maximum allowed cloud coverage (e.g., `0.2` for 20%).
+
+   Adjust these parameters as needed for your specific use case.
 
 2. **Run the full pipeline:**
    ```bash
