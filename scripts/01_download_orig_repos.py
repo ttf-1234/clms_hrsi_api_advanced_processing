@@ -17,8 +17,10 @@ import os        # For file and path operations
 # URL of the original CLMS HRSI API client script on GitHub
 url = "https://raw.githubusercontent.com/eea/clms-hrsi-api-client-python/refs/heads/main/clms_hrsi_downloader.py"
 
-# Local path where the script will be saved
-local_path = "./CLMS_downloader.py"
+
+# Local path where the script will be saved (in the scripts folder)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+local_path = os.path.join(script_dir, "CLMS_downloader.py")
 
 # Download the file from GitHub
 response = requests.get(url)

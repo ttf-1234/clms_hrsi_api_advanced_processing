@@ -14,11 +14,18 @@ Code with comments:
 import sys
 import os
 import re
-sys.path.append('../')
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
+
+
+# --- Ensure clms_data directory exists ---
+clms_data_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data")
+os.makedirs(clms_data_dir, exist_ok=True)
+
 # --- Ensure credentials file exists ---
-credentials_path = "./../data/clms_data/credentials.txt"
+credentials_path = os.path.join(clms_data_dir, "credentials.txt")
 if not os.path.exists(credentials_path):
     with open(credentials_path, "w") as f:
         f.write(f"{config.clms_username}:{config.clms_password}\n")
@@ -91,8 +98,9 @@ for tile in tile_names:
         os.makedirs(product_output_dir, exist_ok=True)
 
         # Build the command to run the CLMS_downloader.py script
+        clms_downloader_path = os.path.join(os.path.dirname(__file__), "CLMS_downloader.py")
         cmd = (
-            f"python ./CLMS_downloader.py "
+            f"python {clms_downloader_path} "
             f"-{query_type} "
             f"-productIdentifier {tile} "
             f"-productType {product_type} "
