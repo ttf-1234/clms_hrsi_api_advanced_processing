@@ -17,7 +17,8 @@ import glob
 import rasterio
 import numpy as np
 import sys
-sys.path.append('../')
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
 def get_cloud_mask(arr, use_reclassify):
@@ -69,9 +70,10 @@ if __name__ == "__main__":
     # Only run if crop_resample and filter_cc are enabled
     if getattr(config, "crop_resample", False) and getattr(config, "filter_cc", False):
         use_reclassify = getattr(config, "reclassify", False)
+
         cc_threshold = config.cc_threshold
-        base_in_dir = os.path.join(config.output_path_processed, "resampled")
-        base_out_dir = os.path.join(config.output_path_processed, "cc_filtered")
+        base_in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "resampled")
+        base_out_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "cc_filtered")
 
         for product_type in config.clms_product:
             # Prefer mosaics if available, otherwise use non-mosaic

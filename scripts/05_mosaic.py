@@ -15,7 +15,8 @@ import glob
 import rasterio
 from rasterio.merge import merge
 import sys
-sys.path.append('../')
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 import re
 from collections import defaultdict
@@ -60,7 +61,7 @@ if __name__ == "__main__":
         print("Starting mosaicking process...")
         for product_type in config.clms_product:
             print(f"\nProcessing product: {product_type}")
-            product_dir = os.path.join(config.output_path_original, product_type)
+            product_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original", product_type)
             mosaic_dir = os.path.join(product_dir, "mosaic")
             os.makedirs(mosaic_dir, exist_ok=True)
 

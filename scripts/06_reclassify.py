@@ -14,7 +14,8 @@ import glob
 import numpy as np
 import rasterio
 import sys
-sys.path.append('../')
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
 LAYERS_TO_RECLASSIFY = ["FSCTOC", "FSCOG", "NDSI"]  # Layers to be reclassified
@@ -107,8 +108,8 @@ if __name__ == "__main__":
     if config.reclassify:
         for product_type in config.clms_product:
             # Process original (unmosaiced)
-            in_dir = os.path.join(config.output_path_original, product_type)
-            out_dir = os.path.join(config.output_path_processed, "reclassified", product_type)
+            in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original", product_type)
+            out_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "reclassified", product_type)
             process_folder(product_type, in_dir, out_dir)
             # Process mosaiced
             process_mosaic(product_type, in_dir, out_dir)
