@@ -18,7 +18,15 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
-LAYERS_TO_RECLASSIFY = ["FSCTOC", "FSCOG", "NDSI"]  # Layers to be reclassified
+# Define product layers to reclassify for each product type
+PRODUCT_LAYERS_TO_RECLASSIFY = {
+    "FSC": ["FSCTOC", "FSCOG", "NDSI"],
+    "PSA": ["PSA"], 
+    "WDS": ["SSC"],
+    "SWS": ["WSM"],
+    "GFSC": ["GF"]
+}
+
 NODATA_VALUE = -9999  # Value used for NA/nodata in output
 RECLASS_SUFFIX = "_reclass"  # Suffix for reclassified files
 
@@ -42,12 +50,12 @@ def process_folder(product_type, in_dir, out_dir):
             layer = os.path.basename(tif_path).split("_")[-1].replace(".tif", "").upper()
             base_name = os.path.basename(tif_path)
             # Add _reclass suffix for reclassified layers
-            if layer in LAYERS_TO_RECLASSIFY:
+            if layer in PRODUCT_LAYERS_TO_RECLASSIFY.get(product_type, []):
                 out_name = base_name.replace(f"_{layer}.tif", f"_{layer}{RECLASS_SUFFIX}.tif")
             else:
                 out_name = base_name
             out_path = os.path.join(out_subfolder, out_name)
-            if layer in LAYERS_TO_RECLASSIFY:
+            if layer in PRODUCT_LAYERS_TO_RECLASSIFY.get(product_type, []):
                 with rasterio.open(tif_path) as src:
                     arr = src.read(1)
                     arr_reclass = reclassify_array(arr)
@@ -80,12 +88,12 @@ def process_mosaic(product_type, in_dir, out_dir):
         layer = parts[2].upper()
         base_name = os.path.basename(tif_path)
         # Add _reclass suffix for reclassified layers
-        if layer in LAYERS_TO_RECLASSIFY:
+        if layer in PRODUCT_LAYERS_TO_RECLASSIFY.get(product_type, []):
             out_name = base_name.replace(f"_{layer}_", f"_{layer}{RECLASS_SUFFIX}_")
         else:
             out_name = base_name
         out_path = os.path.join(mosaic_out_dir, out_name)
-        if layer in LAYERS_TO_RECLASSIFY:
+        if layer in PRODUCT_LAYERS_TO_RECLASSIFY.get(product_type, []):
             with rasterio.open(tif_path) as src:
                 arr = src.read(1)
                 arr_reclass = reclassify_array(arr)
