@@ -22,7 +22,7 @@ import re
 from collections import defaultdict
 
 # List of all possible layers to process
-LAYERS = ["CLD", "FSCOG", "FSCTOC", "NDSI", "QCFLAGS", "QCOG", "QCTOC"]
+LAYERS = ["CLD", "FSCOG", "FSCTOC", "NDSI", "QCFLAGS", "QCOG", "QCTOC","PSA","QC","SSC","QCSSC","WSM","QCWSM","GF"]
 
 def get_date_from_filename(filename):
     # Extracts date in format YYYYMMDD from filename like FSC_20230101T102754_S2B_T32TPS_V102_1
