@@ -36,7 +36,6 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
 - **Reference Raster:**  
   You must provide a reference raster file (e.g., a DEM or any raster) that defines your AOI. The path and CRS for this raster are set in `config.py`:
   ```python
-  import os
   BASE_DIR = os.path.dirname(os.path.abspath(__file__))
   reference_raster_path = os.path.join(BASE_DIR, "data/reference_raster/dem_rofental_100.asc")
   reference_raster_crs = "EPSG:32632"
