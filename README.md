@@ -36,7 +36,9 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
 - **Reference Raster:**  
   You must provide a reference raster file (e.g., a DEM or any raster) that defines your AOI. The path and CRS for this raster are set in `config.py`:
   ```python
-  reference_raster_path = "./../data/reference_raster/dem_rofental_100.asc"
+  import os
+  BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+  reference_raster_path = os.path.join(BASE_DIR, "data/reference_raster/dem_rofental_100.asc")
   reference_raster_crs = "EPSG:32632"
   ```
 
@@ -52,10 +54,11 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
 
 1. **Configure your processing parameters and credentials in `config.py`.**
 
-   In `config.py`, you can set the following options to control the pipeline:
+
+   In `config.py`, all paths are now resolved relative to the project root using `BASE_DIR`. You can set the following options to control the pipeline:
 
    - **Reference Raster:**
-     - `reference_raster_path`: Path to your reference raster file (defines AOI).
+     - `reference_raster_path`: Path to your reference raster file (defines AOI), e.g. `os.path.join(BASE_DIR, "data/reference_raster/dem_rofental_100.asc")`.
      - `reference_raster_crs`: CRS of your reference raster.
      - `tile_txt_path`: Path where the list of relevant Sentinel-2 tiles will be saved.
 
@@ -72,8 +75,8 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
      - `end_date`: End date for data download (format: `YYYY-MM-DDTHH:MM:SSZ`).
 
    - **Output Paths:**
-     - `output_path_original`: Directory for original downloaded data.
-     - `output_path_processed`: Directory for processed data.
+     - `output_path_original`: Directory for original downloaded data, e.g. `os.path.join(BASE_DIR, "data/clms_data/original/")`.
+     - `output_path_processed`: Directory for processed data, e.g. `os.path.join(BASE_DIR, "data/clms_data/processed/")`.
 
    - **Processing Options:**
      - `mosaic_output`: `True` to create mosaics, `False` to skip.
