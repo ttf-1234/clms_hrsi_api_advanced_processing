@@ -15,7 +15,8 @@ import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 import numpy as np
 import sys
-sys.path.append('../')
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
 def resample_raster(input_path, reference_path, output_path, resampling_method=Resampling.nearest):
@@ -120,19 +121,19 @@ if __name__ == "__main__":
         reference_raster = config.reference_raster_path
         # Use reclassified rasters if reclassify is True, otherwise use original rasters
         if hasattr(config, "reclassify") and config.reclassify:
-            base_in_dir = os.path.join(config.output_path_processed, "reclassified")
+            base_in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "reclassified")
             use_reclass_suffix = True
         else:
-            base_in_dir = config.output_path_original
+            base_in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original")
             use_reclass_suffix = False
-        base_out_dir = os.path.join(config.output_path_processed, "resampled")
+        base_out_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "resampled")
         os.makedirs(base_out_dir, exist_ok=True)
 
         for product_type in config.clms_product:
             in_dir = os.path.join(base_in_dir, product_type)
             # If reclassify is False and reclassified folder does not exist, use original folder
             if not os.path.exists(in_dir) or not any(os.scandir(in_dir)):
-                in_dir = os.path.join(config.output_path_original, product_type)
+                in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original", product_type)
                 use_reclass_suffix = False
             out_dir = os.path.join(base_out_dir, product_type)
             process_folder(product_type, in_dir, out_dir, reference_raster, use_reclass_suffix)
