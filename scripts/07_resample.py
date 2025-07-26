@@ -55,7 +55,7 @@ def resample_raster(input_path, reference_path, output_path, resampling_method=R
 
 def get_resampling_method(layer):
     # Categorical layers should use nearest, continuous can use bilinear
-    categorical = {"CLD", "QCFLAGS", "QCOG", "QCTOC"}
+    categorical = {"CLD", "QCFLAGS", "QCOG", "QCTOC","QC","SSC","QCSSC","WSM","QCWSM","QC","QCFLAGS"}
     if layer.upper() in categorical:
         return Resampling.nearest
     else:
