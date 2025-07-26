@@ -14,20 +14,24 @@ Code with comments:
 import requests         # For downloading files from the internet
 import zipfile          # For extracting zip files
 import sys
-sys.path.append('../')
 import os               # For file and directory operations
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import config           # Project configuration
 import glob             # For finding files by pattern
 import geopandas as gpd # For working with geospatial vector data
 import rasterio         # For working with raster data
 import shapely.geometry # For geometric operations
-import config           # Project configuration
+
 
 ##### I/O paths and URLs #####
 url = "https://sentiwiki.copernicus.eu/__attachments/1692737/S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.zip?inst-v=7e368646-a179-477f-af62-26dcc645dd8a"
-destination_path = "./../data/tile_system/S2_tile_info.zip"
-unziped_path = "./../data/tile_system/"
+destination_path = os.path.join(os.path.dirname(config.__file__), "data/tile_system/S2_tile_info.zip")
+unziped_path = os.path.join(os.path.dirname(config.__file__), "data/tile_system/")
 AOI_path = config.reference_raster_path
 result_path = config.tile_txt_path
+
+# Ensure the tile_system directory exists
+os.makedirs(unziped_path, exist_ok=True)
 
 ##### Download and unzip tile system shapefile if not already existing #####
 if os.path.exists(unziped_path) and os.listdir(unziped_path):

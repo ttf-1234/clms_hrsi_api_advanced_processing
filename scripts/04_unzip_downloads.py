@@ -11,12 +11,14 @@ Code with comments:
 import os
 import zipfile
 import sys
-sys.path.append('../')
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import config
 
+
 def unzip_and_cleanup(product_type):
-    # Get the directory for the current product type
-    product_dir = os.path.join(config.output_path_original, product_type)
+    # Get the directory for the current product type, always relative to config.py
+    product_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original", product_type)
     if not os.path.isdir(product_dir):
         print(f"Directory not found: {product_dir}")
         return
