@@ -1,7 +1,10 @@
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 ##### Path of the reference raster #####
-reference_raster_path = "./../data/reference_raster/dem_rofental_100.asc"
+reference_raster_path = os.path.join(BASE_DIR, "data/reference_raster/dem_rofental_100.asc")
 reference_raster_crs = "EPSG:32632"
-tile_txt_path = "./../data/tile_system/relevant_tiles.txt"
+tile_txt_path = os.path.join(BASE_DIR, "data/tile_system/relevant_tiles.txt")
 
 ##### CLMS credentials #####
 clms_username = "xxx"
@@ -17,8 +20,8 @@ start_date = "2023-01-01T00:00:00Z"
 end_date = "2023-01-15T23:59:59Z"
 
 ##### Output path for downloaded data #####
-output_path_original = "./../data/clms_data/original/"
-output_path_processed = "./../data/clms_data/processed/"
+output_path_original = os.path.join(BASE_DIR, "data/clms_data/original/")
+output_path_processed = os.path.join(BASE_DIR, "data/clms_data/processed/")
 
 ##### Further processing #####
 mosaic_output = True
