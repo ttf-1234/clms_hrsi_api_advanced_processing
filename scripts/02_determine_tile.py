@@ -23,12 +23,24 @@ import rasterio         # For working with raster data
 import shapely.geometry # For geometric operations
 
 
+
 ##### I/O paths and URLs #####
 url = "https://sentiwiki.copernicus.eu/__attachments/1692737/S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.zip?inst-v=7e368646-a179-477f-af62-26dcc645dd8a"
 destination_path = os.path.join(os.path.dirname(config.__file__), "data/tile_system/S2_tile_info.zip")
 unziped_path = os.path.join(os.path.dirname(config.__file__), "data/tile_system/")
-AOI_path = config.reference_raster_path
-result_path = config.tile_txt_path
+
+# Helper to get all reference rasters in the directory
+def get_reference_rasters(ref_dir):
+    rasters = []
+    for ext in (".asc", ".tif"):
+        rasters.extend([
+            os.path.join(ref_dir, f)
+            for f in os.listdir(ref_dir)
+            if f.lower().endswith(ext)
+        ])
+    return rasters
+
+reference_rasters = get_reference_rasters(config.reference_raster_dir)
 
 # Ensure the tile_system directory exists
 os.makedirs(unziped_path, exist_ok=True)
@@ -64,36 +76,40 @@ else:
     print("KML file loaded into Python!")
     print("KML CRS:", s2_tile_system.crs)
 
-##### Read reference raster and turn into box #####
-if not os.path.exists(AOI_path):
-    print(f"Reference raster file not found: {AOI_path}")
-    exit(1)
 
-with rasterio.open(AOI_path, "r+") as src:
-    # If the raster has no CRS, set it from config
-    if src.crs is None:
-        print("The reference raster does not have a CRS defined.")
-        src.crs = config.reference_raster_crs
-    # Get the bounding box of the raster as a shapely geometry
-    bounds = src.bounds
-    aoi_geom = shapely.geometry.box(bounds.left, bounds.bottom, bounds.right, bounds.top)
-    aoi_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=src.crs)
+##### Loop over all reference rasters #####
+for AOI_path in reference_rasters:
+    raster_name = os.path.splitext(os.path.basename(AOI_path))[0]
+    result_path = os.path.join(os.path.dirname(config.tile_txt_path), f"relevant_tiles_{raster_name}.txt")
 
-##### Find intersecting tiles #####
-# Reproject AOI to tile system CRS if needed
-aoi_gdf = aoi_gdf.to_crs(s2_tile_system.crs)
-# Find all tiles that intersect with the AOI
-intersecting_tiles = s2_tile_system[s2_tile_system.intersects(aoi_gdf.geometry.iloc[0])]
+    if not os.path.exists(AOI_path):
+        print(f"Reference raster file not found: {AOI_path}")
+        continue
 
-##### Write intersecting tiles to file #####
-if not intersecting_tiles.empty:
-    with open(result_path, 'w') as f:
+    with rasterio.open(AOI_path, "r+") as src:
+        # If the raster has no CRS, set it from config
+        if src.crs is None:
+            print("The reference raster does not have a CRS defined.")
+            src.crs = config.reference_raster_crs
+        # Get the bounding box of the raster as a shapely geometry
+        bounds = src.bounds
+        aoi_geom = shapely.geometry.box(bounds.left, bounds.bottom, bounds.right, bounds.top)
+        aoi_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=src.crs)
+
+    # Reproject AOI to tile system CRS if needed
+    aoi_gdf = aoi_gdf.to_crs(s2_tile_system.crs)
+    # Find all tiles that intersect with the AOI
+    intersecting_tiles = s2_tile_system[s2_tile_system.intersects(aoi_gdf.geometry.iloc[0])]
+
+    # Write intersecting tiles to file
+    if not intersecting_tiles.empty:
+        with open(result_path, 'w') as f:
+            for tile in intersecting_tiles['Name']:
+                f.write(f"{tile}\n")
+        print(f"Intersecting tiles written to {result_path}")
+        print("Determined tiles for raster:", AOI_path)
         for tile in intersecting_tiles['Name']:
-            f.write(f"{tile}\n")
-    print(f"Intersecting tiles written to {result_path}")
-    print("Determined tiles:")
-    for tile in intersecting_tiles['Name']:
-        print(f"  {tile}")
-else:
-    print("No intersecting tiles found.")
+            print(f"  {tile}")
+    else:
+        print(f"No intersecting tiles found for raster: {AOI_path}")
 
