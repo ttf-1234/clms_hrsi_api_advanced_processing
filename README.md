@@ -80,7 +80,6 @@ The full path is constructed automatically from the `reference_raster_dir` varia
        ]
        ```
      - `reference_raster_dir`: Directory where your reference rasters are stored (default: `data/reference_raster`).
-     - `tile_txt_path`: Path where the list of relevant Sentinel-2 tiles will be saved.
 
    - **CLMS Credentials:**
      - `clms_username`: Your CLMS username.
