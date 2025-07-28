@@ -93,8 +93,8 @@ if query_type not in ALLOWED_QUERY_TYPES:
 
 for raster_entry in reference_rasters:
     raster_folder = get_raster_folder_name(raster_entry)
-    # Determine the relevant tiles file for this raster
-    tile_file = os.path.join(os.path.dirname(config.tile_txt_path), f"relevant_tiles_{raster_folder}.txt")
+    # Determine the relevant tiles file for this raster (always in data/tile_system/)
+    tile_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/tile_system/', f"relevant_tiles_{raster_folder}.txt"))
     if not os.path.exists(tile_file):
         print(f"Tile txt file not found for raster {raster_folder}: {tile_file}")
         continue
