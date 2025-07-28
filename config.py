@@ -29,7 +29,7 @@ clms_product=["FSC"]
 
 ##### Period #####
 start_date = "2023-07-01T00:00:00Z"
-end_date = "2023-07-15T23:59:59Z"
+end_date = "2023-07-05T23:59:59Z"
 
 ##### Output path for downloaded data #####
 output_path_original = os.path.join(BASE_DIR, "data/clms_data/original/")
@@ -39,5 +39,5 @@ output_path_processed = os.path.join(BASE_DIR, "data/clms_data/processed/")
 mosaic_output = True
 reclassify = True
 crop_resample = True
-filter_cc = False
+filter_cc = True
 cc_threshold = 0.2
