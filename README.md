@@ -9,10 +9,7 @@ This pipeline is based on and extends the following repository:
 - [eea/clms-hrsi-api-client-python](https://github.com/eea/clms-hrsi-api-client-python) (official CLMS HRSI API client)
 
 Included Example Data:
-This repository includes two exemplary reference rasters in `data/reference_raster/`:
-- `dem_rofental_100.asc`: covering a region in the Austrian Alps
-- `dem_guadalfeo_100.tif`: covering a region in the Spanish Sierra Nevada
-You can use these for testing or as templates for your own data.
+This repository includes two exemplary reference rasters located in the `data/reference_raster/` directory. The file `dem_rofental_100.asc` covers a region in the Austrian Alps, while `dem_guadalfeo_100.tif` covers a region in the Spanish Sierra Nevada. You can use these rasters for testing purposes or as templates for preparing your own data.
 
 The pipeline is designed for reproducible, large-scale processing of Sentinel-2 based snow products for a user-defined area of interest (AOI).  
 For more information about the CLMS snow products, visit the [Copernicus Land Monitoring Service Snow Products page](https://land.copernicus.eu/en/products/snow).
