@@ -34,12 +34,15 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
 ## Required Input Data
 
 - **Reference Raster:**  
-  You must provide a reference raster file (e.g., a DEM or any raster) that defines your AOI. The path and CRS for this raster are set in `config.py`:
-  ```python
-  BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-  reference_raster_path = os.path.join(BASE_DIR, "data/reference_raster/dem_rofental_100.asc")
-  reference_raster_crs = "EPSG:32632"
-  ```
+You must provide one or more reference raster files (e.g., DEMs) that define your AOI. In `config.py`, you now only need to specify the raster filename and its CRS:
+```python
+reference_rasters = [
+    {"name": "dem_rofental_100.asc", "crs": "EPSG:32632"},
+    {"name": "dem_guadalfeo_100.tif", "crs": "EPSG:32630"},
+    # Add more as needed
+]
+```
+The full path is constructed automatically from the `reference_raster_dir` variable. No need to specify the full path manually.
 
 - **CLMS Credentials:**  
   Access to the CLMS download API requires a valid username and password. You need a CLMS account to access the data. Register for free at [https://cryo.land.copernicus.eu/finder](https://cryo.land.copernicus.eu/finder). 
@@ -56,9 +59,15 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
 
    In `config.py`, all paths are now resolved relative to the project root using `BASE_DIR`. You can set the following options to control the pipeline:
 
-   - **Reference Raster:**
-     - `reference_raster_path`: Path to your reference raster file (defines AOI), e.g. `os.path.join(BASE_DIR, "data/reference_raster/dem_rofental_100.asc")`.
-     - `reference_raster_crs`: CRS of your reference raster.
+   - **Reference Rasters:**
+     - `reference_rasters`: List of dicts, each with a raster filename and its CRS. Example:
+       ```python
+       reference_rasters = [
+           {"name": "dem_rofental_100.asc", "crs": "EPSG:32632"},
+           {"name": "dem_guadalfeo_100.tif", "crs": "EPSG:32630"},
+       ]
+       ```
+     - `reference_raster_dir`: Directory where your reference rasters are stored (default: `data/reference_raster`).
      - `tile_txt_path`: Path where the list of relevant Sentinel-2 tiles will be saved.
 
    - **CLMS Credentials:**
