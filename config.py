@@ -1,4 +1,8 @@
 import os
+
+# Helper to get full path for a reference raster entry
+def get_reference_raster_path(raster_entry):
+    return os.path.join(reference_raster_dir, raster_entry["name"])
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ##### Directory containing reference rasters #####
@@ -13,10 +17,6 @@ reference_rasters = [
     {"name": "dem_guadalfeo_100.asc", "crs": "EPSG:32630"},
     # Add more as needed
 ]
-
-# Helper to get full path for a reference raster entry
-def get_reference_raster_path(raster_entry):
-    return os.path.join(reference_raster_dir, raster_entry["name"])
 
 ##### CLMS credentials #####
 clms_username = "xx"
