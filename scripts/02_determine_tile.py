@@ -29,18 +29,9 @@ url = "https://sentiwiki.copernicus.eu/__attachments/1692737/S2A_OPER_GIP_TILPAR
 destination_path = os.path.join(os.path.dirname(config.__file__), "data/tile_system/S2_tile_info.zip")
 unziped_path = os.path.join(os.path.dirname(config.__file__), "data/tile_system/")
 
-# Helper to get all reference rasters in the directory
-def get_reference_rasters(ref_dir):
-    rasters = []
-    for ext in (".asc", ".tif"):
-        rasters.extend([
-            os.path.join(ref_dir, f)
-            for f in os.listdir(ref_dir)
-            if f.lower().endswith(ext)
-        ])
-    return rasters
 
-reference_rasters = get_reference_rasters(config.reference_raster_dir)
+# Use the new config.reference_rasters structure (filename+CRS)
+reference_rasters = config.reference_rasters
 
 # Ensure the tile_system directory exists
 os.makedirs(unziped_path, exist_ok=True)
@@ -78,7 +69,9 @@ else:
 
 
 ##### Loop over all reference rasters #####
-for AOI_path in reference_rasters:
+
+for raster_entry in reference_rasters:
+    AOI_path = config.get_reference_raster_path(raster_entry)
     raster_name = os.path.splitext(os.path.basename(AOI_path))[0]
     result_path = os.path.join(os.path.dirname(config.tile_txt_path), f"relevant_tiles_{raster_name}.txt")
 
@@ -86,15 +79,19 @@ for AOI_path in reference_rasters:
         print(f"Reference raster file not found: {AOI_path}")
         continue
 
-    with rasterio.open(AOI_path, "r+") as src:
-        # If the raster has no CRS, set it from config
-        if src.crs is None:
-            print("The reference raster does not have a CRS defined.")
-            src.crs = config.reference_raster_crs
-        # Get the bounding box of the raster as a shapely geometry
-        bounds = src.bounds
-        aoi_geom = shapely.geometry.box(bounds.left, bounds.bottom, bounds.right, bounds.top)
-        aoi_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=src.crs)
+
+    with rasterio.open(AOI_path, "r") as src:
+        if src.crs is not None:
+            # Use the raster's CRS
+            bounds = src.bounds
+            aoi_geom = shapely.geometry.box(bounds.left, bounds.bottom, bounds.right, bounds.top)
+            aoi_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=src.crs)
+        else:
+            # Use the CRS from config for this raster
+            print("The reference raster does not have a CRS defined. Using config CRS:", raster_entry["crs"])
+            bounds = src.bounds
+            aoi_geom = shapely.geometry.box(bounds.left, bounds.bottom, bounds.right, bounds.top)
+            aoi_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=raster_entry["crs"])
 
     # Reproject AOI to tile system CRS if needed
     aoi_gdf = aoi_gdf.to_crs(s2_tile_system.crs)

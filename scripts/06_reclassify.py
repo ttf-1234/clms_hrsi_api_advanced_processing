@@ -49,9 +49,12 @@ def process_folder(product_type, in_dir, out_dir):
         for tif_path in tif_files:
             layer = os.path.basename(tif_path).split("_")[-1].replace(".tif", "").upper()
             base_name = os.path.basename(tif_path)
-            # Add _reclass suffix for reclassified layers
+            # Add _reclass suffix for reclassified layers (always at the end before .tif)
             if layer in PRODUCT_LAYERS_TO_RECLASSIFY.get(product_type, []):
-                out_name = base_name.replace(f"_{layer}.tif", f"_{layer}{RECLASS_SUFFIX}.tif")
+                if base_name.lower().endswith('.tif'):
+                    out_name = base_name[:-4] + f'{RECLASS_SUFFIX}.tif'
+                else:
+                    out_name = base_name + f'{RECLASS_SUFFIX}'
             else:
                 out_name = base_name
             out_path = os.path.join(out_subfolder, out_name)
@@ -87,9 +90,12 @@ def process_mosaic(product_type, in_dir, out_dir):
             continue
         layer = parts[2].upper()
         base_name = os.path.basename(tif_path)
-        # Add _reclass suffix for reclassified layers
+        # Add _reclass suffix for reclassified layers (always at the end before .tif)
         if layer in PRODUCT_LAYERS_TO_RECLASSIFY.get(product_type, []):
-            out_name = base_name.replace(f"_{layer}_", f"_{layer}{RECLASS_SUFFIX}_")
+            if base_name.lower().endswith('.tif'):
+                out_name = base_name[:-4] + f'{RECLASS_SUFFIX}.tif'
+            else:
+                out_name = base_name + f'{RECLASS_SUFFIX}'
         else:
             out_name = base_name
         out_path = os.path.join(mosaic_out_dir, out_name)
@@ -114,12 +120,18 @@ def process_mosaic(product_type, in_dir, out_dir):
 if __name__ == "__main__":
     # Only run if reclassification is enabled in config
     if config.reclassify:
-        for product_type in config.clms_product:
-            # Process original (unmosaiced)
-            in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original", product_type)
-            out_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "reclassified", product_type)
-            process_folder(product_type, in_dir, out_dir)
-            # Process mosaiced
-            process_mosaic(product_type, in_dir, out_dir)
+        for raster_entry in config.reference_rasters:
+            raster_folder = os.path.splitext(raster_entry["name"])[0]
+            print(f"\n=== Processing reference raster: {raster_entry['name']} (folder: {raster_folder}) ===")
+            for product_type in config.clms_product:
+                # Process original (unmosaiced)
+                in_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/original", raster_folder, product_type)
+                out_dir = os.path.join(os.path.dirname(config.__file__), "data/clms_data/processed", "reclassified", raster_folder, product_type)
+                if not os.path.isdir(in_dir):
+                    print(f"  Input directory not found: {in_dir}")
+                    continue
+                process_folder(product_type, in_dir, out_dir)
+                # Process mosaiced
+                process_mosaic(product_type, in_dir, out_dir)
     else:
         print("Reclassification is disabled in config (reclassify is set to False).")
