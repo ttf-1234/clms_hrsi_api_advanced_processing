@@ -31,6 +31,8 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
    pip install geopandas rasterio shapely requests fiona gdal pyogrio
    ```
 
+
+
 ## Required Input Data
 
 - **Reference Raster:**  
@@ -43,6 +45,12 @@ reference_rasters = [
 ]
 ```
 The full path is constructed automatically from the `reference_raster_dir` variable. No need to specify the full path manually.
+
+> **Note:**
+> This repository includes two exemplary reference rasters in `data/reference_raster/`:
+> - `dem_rofental_100.asc`: covering a region in the Austrian Alps
+> - `dem_guadalfeo_100.tif`: covering a region in the Spanish Sierra Nevada
+> You can use these for testing or as templates for your own data.
 
 - **CLMS Credentials:**  
   Access to the CLMS download API requires a valid username and password. You need a CLMS account to access the data. Register for free at [https://cryo.land.copernicus.eu/finder](https://cryo.land.copernicus.eu/finder). 
