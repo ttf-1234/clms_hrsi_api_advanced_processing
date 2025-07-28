@@ -3,7 +3,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ##### Directory containing reference rasters #####
 reference_raster_dir = os.path.join(BASE_DIR, "data/reference_raster")
-tile_txt_path = os.path.join(BASE_DIR, "data/tile_system/relevant_tiles.txt")
 
 
 # List your reference rasters here: just the filename and the CRS string.

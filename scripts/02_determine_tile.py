@@ -73,7 +73,9 @@ else:
 for raster_entry in reference_rasters:
     AOI_path = config.get_reference_raster_path(raster_entry)
     raster_name = os.path.splitext(os.path.basename(AOI_path))[0]
-    result_path = os.path.join(os.path.dirname(config.tile_txt_path), f"relevant_tiles_{raster_name}.txt")
+    # Write tile list to data/tile_system/ directory
+    result_path = os.path.join(os.path.dirname(__file__), '../data/tile_system/', f"relevant_tiles_{raster_name}.txt")
+    result_path = os.path.abspath(result_path)
 
     if not os.path.exists(AOI_path):
         print(f"Reference raster file not found: {AOI_path}")
