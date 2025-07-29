@@ -85,7 +85,6 @@ This will execute all steps: download, tile determination, mosaicking, reclassif
 - `clms_pipeline/`: Contains all pipeline logic and step classes.
     - `pipeline.py`: Orchestrates the workflow.
     - `steps/`: Contains classes for each processing step.
-    - `utils.py`: (Optional) Utility functions.
 
 ## Data Source and Usage Policy
 
