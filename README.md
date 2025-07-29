@@ -1,4 +1,3 @@
-
 # CLMS API Advanced Processing Pipeline
 
 ## Overview
@@ -50,15 +49,16 @@ config = CLMSConfig(
     clms_username="your_username",
     clms_password="your_password",
     clms_query_type="query_and_download",  # "query", "download", or "query_and_download"
-    clms_product=["FSC", "PSA"],
+    clms_product=["FSC"],  # Allowed: ["FSC", "PSA", "SWS", "WDS", "GFSC"]
     start_date="2023-07-01T00:00:00Z",
-    end_date="2023-07-05T23:59:59Z",
+    end_date="2023-07-02T23:59:59Z",
+    reference_raster_dir="data/reference_raster/",
     output_path_original="data/clms_data/original/",
     output_path_processed="data/clms_data/processed/",
     mosaic_output=True,
     reclassify=True,
     crop_resample=True,
-    filter_cc=True,
+    filter_cc=False,
     cc_threshold=0.2,
 )
 ```
@@ -71,7 +71,7 @@ Run the pipeline from the project root:
 python main.py
 ```
 
-This will execute all steps: download, tile determination, mosaicking, reclassification, resampling, and cloud filtering.
+This will execute all steps: download, tile determination, mosaicking, reclassification, resampling, and cloud filtering, according to your configuration.
 
 ## Input Data
 
