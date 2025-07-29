@@ -1,17 +1,14 @@
+
 # CLMS API Advanced Processing Pipeline
 
 ## Overview
 
-This repository provides an automated pipeline for downloading, processing, and filtering Copernicus Land Monitoring Service (CLMS) High Resolution Snow & Ice (HRSI) products. The workflow includes tile selection, data download, unzipping, mosaicking, reclassification, resampling, and cloud coverage filtering, all configurable via a central `config.py` file.
+This repository provides an automated, object-oriented pipeline for downloading, processing, and filtering Copernicus Land Monitoring Service (CLMS) High Resolution Snow & Ice (HRSI) products. The workflow includes tile selection, data download, unzipping, mosaicking, reclassification, resampling, and cloud coverage filtering, all configurable via a central `config.py` file in the project root.
 
+The pipeline is based on and extends the official CLMS HRSI API client:
+- [eea/clms-hrsi-api-client-python](https://github.com/eea/clms-hrsi-api-client-python)
 
-This pipeline is based on and extends the following repository:
-- [eea/clms-hrsi-api-client-python](https://github.com/eea/clms-hrsi-api-client-python) (official CLMS HRSI API client)
-
-This repository includes two exemplary reference rasters located in the `data/reference_raster/` directory. The file `dem_rofental_100.asc` covers a region in the Austrian Alps, while `dem_guadalfeo_100.tif` covers a region in the Spanish Sierra Nevada. You can use these rasters for testing purposes or as templates for preparing your own data.
-
-The pipeline is designed for reproducible, large-scale processing of Sentinel-2 based snow products for a user-defined area of interest (AOI).  
-For more information about the CLMS snow products, visit the [Copernicus Land Monitoring Service Snow Products page](https://land.copernicus.eu/en/products/snow).
+Example reference rasters are provided in `data/reference_raster/`. Use these for testing or as templates for your own AOI.
 
 ## Installation
 
@@ -21,7 +18,7 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
    cd clms_hrsi_api_advanced_processing
    ```
 
-2. **Install dependencies and set up the environment:**
+2. **Set up your Python environment and install dependencies:**
 
    **With Conda:**
    ```bash
@@ -30,102 +27,72 @@ For more information about the CLMS snow products, visit the [Copernicus Land Mo
    conda install -y geopandas rasterio shapely requests fiona gdal pyogrio
    ```
 
-   **Or with pip (if you do not use conda):**
+   **Or with pip:**
    ```bash
    python -m venv venv
    source venv/bin/activate
    pip install geopandas rasterio shapely requests fiona gdal pyogrio
    ```
 
+## Configuration
 
+Edit `config.py` in the project root to set all pipeline options. Example:
 
-## Required Input Data
-
-- **Reference Raster:**  
-You must provide one or more reference raster files (e.g., DEMs) that define your AOI. In `config.py`, you now only need to specify the raster filename and its CRS:
 ```python
-reference_rasters = [
-    {"name": "dem_rofental_100.asc", "crs": "EPSG:32632"},
-    {"name": "dem_guadalfeo_100.tif", "crs": "EPSG:32630"},
-    # Add more as needed
-]
+from config import CLMSConfig
+
+config = CLMSConfig(
+    reference_rasters=[
+        {"name": "dem_rofental_100.asc", "crs": "EPSG:32632"},
+        {"name": "dem_guadalfeo_100.asc", "crs": "EPSG:32630"},
+        # Add more as needed
+    ],
+    clms_username="your_username",
+    clms_password="your_password",
+    clms_query_type="query_and_download",  # "query", "download", or "query_and_download"
+    clms_product=["FSC", "PSA"],
+    start_date="2023-07-01T00:00:00Z",
+    end_date="2023-07-05T23:59:59Z",
+    output_path_original="data/clms_data/original/",
+    output_path_processed="data/clms_data/processed/",
+    mosaic_output=True,
+    reclassify=True,
+    crop_resample=True,
+    filter_cc=True,
+    cc_threshold=0.2,
+)
 ```
-The full path is constructed automatically from the `reference_raster_dir` variable. No need to specify the full path manually.
 
-- **CLMS Credentials:**  
-  Access to the CLMS download API requires a valid username and password. You need a CLMS account to access the data. Register for free at [https://cryo.land.copernicus.eu/finder](https://cryo.land.copernicus.eu/finder). 
-  These must be set in `config.py`:
-  ```python
-  clms_username = "your_username"
-  clms_password = "your_password"
-  ```
+## Usage
 
-## Getting Started
+Run the pipeline from the project root:
 
-1. **Configure your processing parameters and credentials in `config.py`.**
+```bash
+python main.py
+```
 
+This will execute all steps: download, tile determination, mosaicking, reclassification, resampling, and cloud filtering.
 
-   In `config.py`, all paths are now resolved relative to the project root using `BASE_DIR`. You can set the following options to control the pipeline:
+## Input Data
 
-   - **Reference Rasters:**
-     - `reference_rasters`: List of dicts, each with a raster filename and its CRS. Example:
-       ```python
-       reference_rasters = [
-           {"name": "dem_rofental_100.asc", "crs": "EPSG:32632"},
-           {"name": "dem_guadalfeo_100.tif", "crs": "EPSG:32630"},
-       ]
-       ```
-     - `reference_raster_dir`: Directory where your reference rasters are stored (default: `data/reference_raster`).
+- **Reference Rasters:** Place your DEMs or other reference rasters in `data/reference_raster/` and list them in `config.py`.
+- **CLMS Credentials:** Register for a free account at [Copernicus CryoLand Finder](https://cryo.land.copernicus.eu/finder) and set your username/password in `config.py`.
 
-   - **CLMS Credentials:**
-     - `clms_username`: Your CLMS username.
-     - `clms_password`: Your CLMS password.
+## Pipeline Structure
 
-   - **CLMS Product and Download Options:**
-     - `clms_query_type`: `"query"`, `"download"`, or `"query_and_download"` (controls what the downloader does).
-     - `clms_product`: List of product types to download (e.g., `["FSC", "PSA"]`).
-
-   - **Time Period:**
-     - `start_date`: Start date for data download (format: `YYYY-MM-DDTHH:MM:SSZ`).
-     - `end_date`: End date for data download (format: `YYYY-MM-DDTHH:MM:SSZ`).
-
-   - **Output Paths:**
-     - `output_path_original`: Directory for original downloaded data, e.g. `os.path.join(BASE_DIR, "data/clms_data/original/")`.
-     - `output_path_processed`: Directory for processed data, e.g. `os.path.join(BASE_DIR, "data/clms_data/processed/")`.
-
-   - **Processing Options:**
-     - `mosaic_output`: `True` to create mosaics, `False` to skip.
-     - `reclassify`: `True` to reclassify rasters, `False` to skip.
-     - `crop_resample`: `True` to resample/crop rasters to the reference grid, `False` to skip.
-     - `filter_cc`: `True` to filter images by cloud coverage, `False` to skip.
-     - `cc_threshold`: Maximum allowed cloud coverage (e.g., `0.2` for 20%).
-
-   Adjust these parameters as needed for your specific use case.
-
-2. **Run the full pipeline:**
-   ```bash
-   python main.py
-   ```
-
-## Original Repositories
-
-This pipeline builds upon and automates the official [CLMS HRSI API client](https://github.com/eea/clms-hrsi-api-client-python) provided by the European Environment Agency.  
-Tile system data is sourced from [Copernicus Sentinel-2 tiling grid](https://sentiwiki.copernicus.eu/__attachments/1692737/S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.zip?inst-v=7e368646-a179-477f-af62-26dcc645dd8a).
-
+- `main.py`: Entry point for running the pipeline.
+- `config.py`: User-editable configuration file.
+- `clms_pipeline/`: Contains all pipeline logic and step classes.
+    - `pipeline.py`: Orchestrates the workflow.
+    - `steps/`: Contains classes for each processing step.
+    - `utils.py`: (Optional) Utility functions.
 
 ## Data Source and Usage Policy
 
-The Copernicus Land Monitoring Service data used in this pipeline is provided under the principle of full, open, and free access, as established by the Copernicus data and information policy ([Regulation (EU) No 1159/2013](http://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32013R1159)).  
-Key conditions for use include:
+Copernicus Land Monitoring Service data is provided under full, open, and free access ([Regulation (EU) No 1159/2013](http://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32013R1159)).
 
-- **Source Attribution:**  
-  When distributing or sharing Copernicus data or derived information, you must clearly indicate the source as Copernicus and the European Union.
-
-- **No Official Endorsement:**  
-  Do not imply that your activities or products are officially endorsed by the European Union.
-
-- **Modification Disclosure:**  
-  If you adapt or modify the data, you must clearly state this in any communication or publication.
-
-- **Ownership:**  
-  The data remain the sole property of the European Union. Any information and data produced in the framework of this pipeline are also the property of the European Union. Any communication or publication must acknowledge that the data were produced “with funding by the European Union”.
+**Key conditions:**
+- **Source Attribution:** Always credit Copernicus and the European Union.
+- **No Official Endorsement:** Do not imply EU endorsement.
+- **Modification Disclosure:** Clearly state if you adapt or modify the data.
+- **Ownership:** Data remains property of the European Union. Acknowledge funding in any communication or publication.

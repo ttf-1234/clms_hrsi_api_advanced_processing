@@ -3,5 +3,4 @@ config.py
 __pycache__
 CLMS_downloader.py
 data/clms_data/credentials.txt
-data/clms_data/tile_system/relevant_tiles.txt
 data/clms_data/tile_system/S2A_OPER_GIP_TILPAR_MPC__20151209T095117_V20150622T000000_21000101T000000_B00.kml
